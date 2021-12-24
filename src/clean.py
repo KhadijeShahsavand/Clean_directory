@@ -22,17 +22,16 @@ class OraganizeFiles:
                 self.extensions_dest[ext] = dir_name
 
     def __call__(self, directory: Union[str, Path]):
-        logger.info("__call__!")
         """ Organize files in a directory by moving them
         to sub directories based on extension.
         """
-        self.directory = Path(directory)
-        if not self.directory.exists():
+        directory = Path(directory)
+        if not directory.exists():
             raise FileNotFoundError(f"{directory} does not exist")
 
         logger.info(f"Organizing files in {directory}...")
         file_extensions = []
-        for file_path in self.directory.iterdir():
+        for file_path in directory.iterdir():
             # ignore directories
             if file_path.is_dir():
                 continue
@@ -44,16 +43,15 @@ class OraganizeFiles:
             # move files
             file_extensions.append(file_path.suffix)
             if file_path.suffix not in self.extensions_dest:
-                DEST_DIR = self.directory / 'other'
+                DEST_DIR = directory / 'other'
             else:
-                DEST_DIR = self.directory / self.extensions_dest[file_path.suffix]
+                DEST_DIR = directory / self.extensions_dest[file_path.suffix]
 
             DEST_DIR.mkdir(exist_ok=True)
             logger.info(f"Moving {file_path} to {DEST_DIR}...")
             shutil.move(str(file_path), str(DEST_DIR))
 
 if __name__ == "__main__":
-    #org_files = OraganizeFiles('/mnt/c/Users/Shahsavand/Downloads')
     org_files = OraganizeFiles()
-    org_files('/mnt/c/Users/Shahsavand/Downloads')
+    org_files(sys.argv[1])
     logger.info("Done!")
